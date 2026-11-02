@@ -33,6 +33,7 @@ import type { NewsPanel } from '@/components/NewsPanel';
 import type { AviationCommandBar } from '@/components/AviationCommandBar';
 import { MobilePanelNav } from '@/components/MobilePanelNav';
 import { debounce, loadFromStorage, saveToStorage } from '@/utils';
+import { noItemsInRangeText } from '@/utils/news-range-label';
 import { escapeHtml } from '@/utils/sanitize';
 import {
   CANONICAL_FEEDS,
@@ -2383,7 +2384,7 @@ export class PanelLayoutManager implements AppModule {
       if (existingItems) {
         const filteredItems = this.filterItemsByTimeRange(existingItems);
         if (filteredItems.length === 0 && existingItems.length > 0) {
-          panel.renderFilteredEmpty(`No items in ${this.getTimeRangeLabel()}`);
+          panel.renderFilteredEmpty(noItemsInRangeText(this.ctx.currentTimeRange));
         } else {
           panel.renderNews(filteredItems);
         }
@@ -3612,7 +3613,7 @@ export class PanelLayoutManager implements AppModule {
       if (!panel) return;
       const filtered = this.filterItemsByTimeRange(items);
       if (filtered.length === 0 && items.length > 0) {
-        panel.renderFilteredEmpty(`No items in ${this.getTimeRangeLabel()}`);
+        panel.renderFilteredEmpty(noItemsInRangeText(this.ctx.currentTimeRange));
         return;
       }
       panel.renderNews(filtered);
@@ -3637,15 +3638,6 @@ export class PanelLayoutManager implements AppModule {
       // is the intentional shift — see data-loader.filterItemsByTimeRange.
       return effectivePubDateMs(item) >= cutoff;
     });
-  }
-
-  private getTimeRangeLabel(): string {
-    const labels: Record<string, string> = {
-      '1h': 'the last hour', '6h': 'the last 6 hours',
-      '24h': 'the last 24 hours', '48h': 'the last 48 hours',
-      '7d': 'the last 7 days', 'all': 'all time',
-    };
-    return labels[this.ctx.currentTimeRange] ?? 'the last 7 days';
   }
 
   private applyInitialUrlState(): void {

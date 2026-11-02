@@ -4,6 +4,8 @@ import { openExternalUrl } from '@/services/external-navigation';
 import { THEATER_PRESETS, getTheaterPreset, getTheaterPresetEnableList, resolveTheaterPresetSources, type TheaterPreset } from '@/config/theater-presets';
 import {
   PANEL_CATEGORY_MAP,
+  PANEL_CATEGORY_OTHER_KEY,
+  getUncategorizedPanelKeys,
   ALL_PANELS,
   getEffectivePanelConfig,
   getVariantPanelCategories,
@@ -1417,7 +1419,11 @@ export class UnifiedSettings {
     return [
       { key: 'all', label: t('header.sourceRegionAll') },
       ...getVariantPanelCategories(this.config.getPanelSettings(), SITE_VARIANT)
-        .map(({ key, labelKey }) => ({ key, label: t(labelKey) })),
+        .map(({ key, labelKey }) => ({
+          key,
+          // "其他" 只在本 fork 里存在；语言包没有该键时退回英文。
+          label: t(labelKey, key === PANEL_CATEGORY_OTHER_KEY ? { defaultValue: 'Other' } : undefined),
+        })),
     ];
   }
 
@@ -1428,13 +1434,19 @@ export class UnifiedSettings {
       .filter(([key]) => !key.startsWith('cw-'));
 
     if (this.activePanelCategory !== 'all') {
-      const catDef = PANEL_CATEGORY_MAP[this.activePanelCategory];
-      if (catDef) {
-        if (!this.categoryMatchesVariant(catDef)) {
-          return [];
+      if (this.activePanelCategory === PANEL_CATEGORY_OTHER_KEY) {
+        // 兜底分类的动态键集合：随草稿里的开关实时变化，不走静态表。
+        const other = new Set(getUncategorizedPanelKeys(this.draftPanelSettings, SITE_VARIANT));
+        entries = entries.filter(([key]) => other.has(key));
+      } else {
+        const catDef = PANEL_CATEGORY_MAP[this.activePanelCategory];
+        if (catDef) {
+          if (!this.categoryMatchesVariant(catDef)) {
+            return [];
+          }
+          const allowed = new Set(catDef.panelKeys);
+          entries = entries.filter(([key]) => allowed.has(key));
         }
-        const allowed = new Set(catDef.panelKeys);
-        entries = entries.filter(([key]) => allowed.has(key));
       }
     }
 

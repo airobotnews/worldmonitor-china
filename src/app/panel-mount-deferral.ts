@@ -6,6 +6,7 @@ import {
   isPanelGridColumnCountReady,
   setColSpanClass,
 } from '@/utils/panel-grid';
+import { localizePanelTitle } from '@/utils/panel-title';
 
 export const INITIAL_PANEL_MOUNT_BUDGET_DESKTOP = 8;
 // Mobile mounts fewer panels eagerly; the rest get IntersectionObserver shells (700px
@@ -174,7 +175,7 @@ export function createDeferredPanelShell(
 
   const titleEl = document.createElement('span');
   titleEl.className = 'panel-title';
-  titleEl.textContent = title;
+  titleEl.textContent = localizePanelTitle(panelId, title);
   headerLeft.appendChild(titleEl);
   header.appendChild(headerLeft);
 

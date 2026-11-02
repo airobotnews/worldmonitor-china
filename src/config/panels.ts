@@ -1271,8 +1271,12 @@ export function isPanelInVariantDefaults(key: string): boolean {
   return SITE_VARIANT_DEFAULTS.has(key);
 }
 
-export const FREE_MAX_PANELS = 40;
-export const FREE_MAX_SOURCES = 80;
+// [china-fork] 自托管（LOCAL_API_MODE=docker）没有 Clerk/Convex 权益后端，所有访问者
+// 都按 free 档结算；而 FULL 变体自身默认启用 80+ 个面板、默认源也超过 80 条，
+// 于是每次启动 enforceFreePanelLimit / 源上限都会把超出的部分裁掉并**存盘**，
+// 表现为"每次刷新面板丢失"。自用实例把上限放到足以容纳默认布局。
+export const FREE_MAX_PANELS = 200;
+export const FREE_MAX_SOURCES = 200;
 
 export function isFreePanelCapCounted(key: string): boolean {
   return key !== 'map' && !key.startsWith('cw-');
@@ -1542,25 +1546,28 @@ export const PANEL_CATEGORY_MAP: Record<string, { labelKey: string; panelKeys: s
   },
   dataTracking: {
     labelKey: 'header.panelCatDataTracking',
-    panelKeys: ['monitors', 'ukmto-incidents', 'satellite-fires', 'ucdp-events', 'displacement', 'climate', 'climate-news', 'population-exposure', 'security-advisories', 'toronto-safety', 'radiation-watch', 'oref-sirens', 'world-clock', 'tech-readiness', 'disease-outbreaks', 'fao-food-price-index', 'grocery-basket', 'defense-patents'],
+    panelKeys: ['monitors', 'ukmto-incidents', 'satellite-fires', 'ucdp-events', 'displacement', 'climate', 'climate-news', 'population-exposure', 'security-advisories', 'toronto-safety', 'radiation-watch', 'oref-sirens', 'world-clock', 'tech-readiness', 'disease-outbreaks', 'fao-food-price-index', 'grocery-basket', 'defense-patents', 'airline-intel'],
     variants: ['full', 'energy'],
   },
 
   // Tech variant
+  // [china-fork] 这三类原先只对 tech 变体可见，导致 FULL 下启动/创业、科技、安全政策
+  // 共 30+ 个面板落不进任何分类、只出现在"全部"里。自用实例上 FULL 是主界面，
+  // 因此把 full 一并纳入（分类是筛选器，面板可同时属于多个分类）。
   techAi: {
     labelKey: 'header.panelCatTechAi',
     panelKeys: ['ai', 'tech', 'hardware', 'cloud', 'dev', 'github', 'producthunt', 'events', 'service-status', 'tech-readiness', 'internet-disruptions', 'tech-hubs'],
-    variants: ['tech'],
+    variants: ['full', 'tech'],
   },
   startupsVc: {
     labelKey: 'header.panelCatStartupsVc',
     panelKeys: ['startups', 'vcblogs', 'regionalStartups', 'unicorns', 'accelerators', 'funding', 'ipo'],
-    variants: ['tech'],
+    variants: ['full', 'tech'],
   },
   securityPolicy: {
     labelKey: 'header.panelCatSecurityPolicy',
     panelKeys: ['security', 'policy', 'ai-regulation'],
-    variants: ['tech'],
+    variants: ['full', 'tech'],
   },
   techMarkets: {
     labelKey: 'header.panelCatMarkets',
@@ -1574,35 +1581,37 @@ export const PANEL_CATEGORY_MAP: Record<string, { labelKey: string; panelKeys: s
     panelKeys: ['markets', 'stock-analysis', 'stock-backtest', 'daily-market-brief', 'markets-news', 'heatmap', 'macro-signals', 'analysis', 'polymarket', 'nq-pulse', 'nq-catalysts', 'nq-news'],
     variants: ['finance'],
   },
+  // [china-fork] 同理：这五类原先只对 finance 变体可见，FULL 下外汇/债券、加密、
+  // 央行经济、交易机构、海湾这些面板没有分类入口。
   fixedIncomeFx: {
     labelKey: 'header.panelCatFixedIncomeFx',
     panelKeys: ['forex', 'fx', 'bonds'],
-    variants: ['finance'],
+    variants: ['full', 'finance'],
   },
   finCommodities: {
     labelKey: 'header.panelCatCommodities',
     panelKeys: ['commodities', 'energy-complex', 'commodities-news'],
-    variants: ['finance'],
+    variants: ['full', 'finance'],
   },
   cryptoDigital: {
     labelKey: 'header.panelCatCryptoDigital',
     panelKeys: ['crypto', 'crypto-heatmap', 'defi-tokens', 'ai-tokens', 'other-tokens', 'crypto-news', 'etf-flows', 'stablecoins', 'fintech'],
-    variants: ['finance'],
+    variants: ['full', 'finance'],
   },
   centralBanksEcon: {
     labelKey: 'header.panelCatCentralBanks',
     panelKeys: ['centralbanks', 'economic', 'global-procurement', 'energy-complex', 'trade-policy', 'sanctions-pressure', 'supply-chain', 'china-corridors', 'china-activity-nowcast', 'economic-news'],
-    variants: ['finance'],
+    variants: ['full', 'finance'],
   },
   dealsInstitutional: {
     labelKey: 'header.panelCatDeals',
     panelKeys: ['ipo', 'derivatives', 'institutional', 'fin-regulation'],
-    variants: ['finance'],
+    variants: ['full', 'finance'],
   },
   gulfMena: {
     labelKey: 'header.panelCatGulfMena',
     panelKeys: ['gulf-economies', 'gcc-investments', 'gccNews', 'consumer-prices', 'monitors', 'world-clock'],
-    variants: ['finance'],
+    variants: ['full', 'finance'],
   },
 
   // Commodity variant
@@ -1622,16 +1631,34 @@ export const PANEL_CATEGORY_MAP: Record<string, { labelKey: string; panelKeys: s
     variants: ['commodity'],
   },
 
-  // Happy variant
+  // Happy variant — [china-fork] full 也纳入，否则好消息那批面板在 FULL 下无分类入口。
   happyNews: {
     labelKey: 'header.panelCatHappyNews',
     panelKeys: ['positive-feed', 'progress', 'counters', 'spotlight', 'breakthroughs', 'digest'],
-    variants: ['happy'],
+    variants: ['full', 'happy'],
   },
   happyPlanet: {
     labelKey: 'header.panelCatHappyPlanet',
     panelKeys: ['species', 'renewable', 'giving'],
-    variants: ['happy'],
+    variants: ['full', 'happy'],
+  },
+
+  // [china-fork] FULL 变体补充分类：商品/矿业与股票行情原先只在 finance、commodity
+  // 变体里有分类入口，FULL 下这几个面板只能出现在"全部"里。
+  fullCommodityPrices: {
+    labelKey: 'header.panelCatCommodityPrices',
+    panelKeys: ['gold-silver', 'base-metals', 'critical-minerals'],
+    variants: ['full'],
+  },
+  fullMining: {
+    labelKey: 'header.panelCatMining',
+    panelKeys: ['commodity-news', 'mining-news', 'mining-companies', 'commodity-regulation'],
+    variants: ['full'],
+  },
+  fullTrading: {
+    labelKey: 'header.panelCatMarkets',
+    panelKeys: ['stock-analysis', 'stock-backtest', 'daily-market-brief', 'markets-news', 'analysis', 'nq-pulse', 'nq-catalysts', 'nq-news'],
+    variants: ['full'],
   },
 };
 
@@ -1641,6 +1668,37 @@ export interface VariantPanelCategory {
   panelKeys: string[];
 }
 
+// [china-fork] 兜底分类：FULL 变体的面板会随版本增加，静态分类表追不上。
+// 任何"已启用但不属于当前变体任何分类"的面板都会落进"其他"，保证没有面板
+// 只能出现在"全部"里。
+export const PANEL_CATEGORY_OTHER_KEY = 'other';
+export const PANEL_CATEGORY_OTHER_LABEL_KEY = 'header.panelCatOther';
+
+function isCategoryPanelKey(key: string): boolean {
+  return key !== 'runtime-config' && !key.startsWith('cw-') && !key.startsWith('mcp-');
+}
+
+/** 当前变体下，所有可见分类已经覆盖的面板键。 */
+export function getCategorizedPanelKeys(variant: string): Set<string> {
+  const covered = new Set<string>();
+  for (const def of Object.values(PANEL_CATEGORY_MAP)) {
+    if (def.variants && !def.variants.includes(variant)) continue;
+    for (const key of def.panelKeys) covered.add(key);
+  }
+  return covered;
+}
+
+/** 已启用、但没有任何分类入口的面板键（按当前面板设置计算，含未保存的草稿）。 */
+export function getUncategorizedPanelKeys(
+  panelSettings: Record<string, PanelConfig>,
+  variant: string,
+): string[] {
+  const covered = getCategorizedPanelKeys(variant);
+  return Object.keys(panelSettings).filter(
+    (key) => panelSettings[key]?.enabled && isCategoryPanelKey(key) && !covered.has(key),
+  );
+}
+
 // Categories applicable to `variant` that contain at least one enabled panel.
 // Shared by the settings panel-tab filter and the mobile category nav —
 // callers prepend their own "all" entry and localize labelKey via t().
@@ -1648,10 +1706,21 @@ export function getVariantPanelCategories(
   panelSettings: Record<string, PanelConfig>,
   variant: string,
 ): VariantPanelCategory[] {
-  return Object.entries(PANEL_CATEGORY_MAP)
+  const categories = Object.entries(PANEL_CATEGORY_MAP)
     .filter(([, def]) => !def.variants || def.variants.includes(variant))
     .filter(([, def]) => def.panelKeys.some((pk) => panelSettings[pk]?.enabled))
     .map(([key, def]) => ({ key, labelKey: def.labelKey, panelKeys: def.panelKeys }));
+
+  const uncategorized = getUncategorizedPanelKeys(panelSettings, variant);
+  if (uncategorized.length > 0) {
+    categories.push({
+      key: PANEL_CATEGORY_OTHER_KEY,
+      labelKey: PANEL_CATEGORY_OTHER_LABEL_KEY,
+      panelKeys: uncategorized,
+    });
+  }
+
+  return categories;
 }
 
 // Enabled panels that carry a premium gate on the current surface — drives

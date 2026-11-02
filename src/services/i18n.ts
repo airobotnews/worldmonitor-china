@@ -190,13 +190,17 @@ export async function initI18n({ waitForFullTranslation = false }: { waitForFull
       },
       supportedLngs: [...SUPPORTED_LANGUAGES],
       nonExplicitSupportedLngs: true,
-      fallbackLng: 'en',
+      // [china-fork] 默认中文：没有任何显式选择时落到 zh，再退 en。
+      fallbackLng: ['zh', 'en'],
       debug: import.meta.env.DEV,
       interpolation: {
         escapeValue: false, // not needed for these simple strings
       },
       detection: {
-        order: ['wmQuery', 'wmExplicit', 'navigator'],
+        // [china-fork] 去掉 'navigator'：浏览器语言不再决定界面语言。
+        // 优先级改为 ?lang= > 设置页显式选择 > 兜底 zh（fallbackLng 第一项）。
+        // 要恢复上游行为，把 'navigator' 加回数组末尾即可。
+        order: ['wmQuery', 'wmExplicit'],
         caches: [], // never auto-write — only changeLanguage() persists
       },
     });

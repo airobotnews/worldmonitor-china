@@ -1805,6 +1805,25 @@ export default defineConfig(({ mode }) => {
             });
           },
         },
+        // [china-fork] 本地自托管栈：把未被插件接管的 /api/* 转发给 Node API sidecar。
+        // 容器里这一层由 nginx 承担（含内网令牌头）；dev 模式没有 nginx，所以在这里补上。
+        // 插件中间件（sebuf RPC、rss-proxy）先于 proxy 执行，因此不会被这条规则劫持。
+        // 只需在启动 vite 前 export LOCAL_API_TOKEN / LOCAL_API_PORT（见 scripts/start-stack.ps1）；
+        // 两者缺失时整条规则跳过，行为退回上游。
+        ...(process.env.LOCAL_API_TOKEN && process.env.LOCAL_API_PORT
+          ? {
+              '/api': {
+                target: `http://127.0.0.1:${process.env.LOCAL_API_PORT}`,
+                changeOrigin: true,
+                headers: { 'x-worldmonitor-local-token': process.env.LOCAL_API_TOKEN },
+                configure: (proxy) => {
+                  proxy.on('error', (err) => {
+                    console.log('[local-api] proxy error:', err.message);
+                  });
+                },
+              },
+            }
+          : {}),
       },
     },
   };

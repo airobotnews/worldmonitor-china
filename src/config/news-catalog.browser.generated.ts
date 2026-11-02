@@ -2284,11 +2284,11 @@ export const BROWSER_NEWS_CATALOG: BrowserCatalog = {
       "unicorns": [
         {
           "name": "Unicorn News",
-          "url": "https://news.google.com/rss/search?q=(%22unicorn%20startup%22%20OR%20%22unicorn%20valuation%22%20OR%20%22%241%20billion%20valuation%22)%20when%3A7d&hl=en-US&gl=US&ceid=US:en"
+          "url": "https://techcrunch.com/tag/unicorn/feed/"
         },
         {
           "name": "CB Insights Unicorn",
-          "url": "https://news.google.com/rss/search?q=site:cbinsights.com+unicorn+when:14d&hl=en-US&gl=US&ceid=US:en"
+          "url": "https://sifted.eu/feed"
         },
         {
           "name": "Decacorn News",
@@ -2296,29 +2296,29 @@ export const BROWSER_NEWS_CATALOG: BrowserCatalog = {
         },
         {
           "name": "New Unicorns",
-          "url": "https://news.google.com/rss/search?q=(\"becomes+unicorn\"+OR+\"joins+unicorn\"+OR+\"reaches+unicorn\"+OR+\"achieved+unicorn\")+when:14d&hl=en-US&gl=US&ceid=US:en"
+          "url": "https://tech.eu/feed/"
         }
       ],
       "accelerators": [
         {
           "name": "YC News",
-          "url": "https://news.ycombinator.com/rss"
+          "url": "https://www.ycombinator.com/blog/rss/"
         },
         {
           "name": "Techstars News",
-          "url": "https://news.google.com/rss/search?q=Techstars+accelerator+when:14d&hl=en-US&gl=US&ceid=US:en"
+          "url": "https://techcrunch.com/tag/incubator/feed/"
         },
         {
           "name": "500 Global News",
-          "url": "https://news.google.com/rss/search?q=\"500+Global\"+OR+\"500+Startups\"+accelerator+when:14d&hl=en-US&gl=US&ceid=US:en"
+          "url": "https://techcrunch.com/tag/startup/feed/"
         },
         {
           "name": "Demo Day News",
-          "url": "https://news.google.com/rss/search?q=(%22demo%20day%22%20OR%20%22YC%20batch%22%20OR%20%22accelerator%20batch%22)%20startup%20when%3A7d&hl=en-US&gl=US&ceid=US:en"
+          "url": "https://techcrunch.com/tag/demo-day/feed/"
         },
         {
           "name": "Startup School",
-          "url": "https://news.google.com/rss/search?q=\"Startup+School\"+OR+\"YC+Startup+School\"+when:14d&hl=en-US&gl=US&ceid=US:en"
+          "url": "https://techcrunch.com/tag/y-combinator/feed/"
         }
       ],
       "podcasts": [

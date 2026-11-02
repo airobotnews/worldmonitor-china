@@ -4,6 +4,7 @@ import { getRpcBaseUrl } from '@/services/rpc-client';
 import { isReportableCanadaRoad } from '@/services/canada-road-report';
 import { enqueuePanelCall, invokePanelMethod } from '@/app/pending-panel-data';
 import { markLcpDebug } from '@/utils/lcp-debug';
+import { noItemsInRangeText, timeRangeLabel } from '@/utils/news-range-label';
 import { runHydrationTier, type HydrationTask } from '@/app/hydration-scheduler';
 import { ViewportHydrationLedger, type LoadAllDataTrigger } from '@/app/viewport-hydration-ledger';
 import { yieldToMain } from '@/utils/after-paint';
@@ -1611,15 +1612,7 @@ export class DataLoaderManager implements AppModule {
   }
 
   getTimeRangeLabel(range: TimeRange = this.ctx.currentTimeRange): string {
-    const labels: Record<TimeRange, string> = {
-      '1h': 'the last hour',
-      '6h': 'the last 6 hours',
-      '24h': 'the last 24 hours',
-      '48h': 'the last 48 hours',
-      '7d': 'the last 7 days',
-      'all': 'all time',
-    };
-    return labels[range];
+    return timeRangeLabel(range);
   }
 
   private newsPanelKey(category: string): string {
@@ -1649,7 +1642,7 @@ export class DataLoaderManager implements AppModule {
     const panel = this.ctx.newsPanels[category];
     if (!panel) return;
     if (filteredItems.length === 0 && items.length > 0) {
-      panel.renderFilteredEmpty(`No items in ${this.getTimeRangeLabel()}`);
+      panel.renderFilteredEmpty(noItemsInRangeText(this.ctx.currentTimeRange));
       return;
     }
     panel.renderNews(filteredItems);
