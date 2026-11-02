@@ -1,0 +1,5 @@
+# 本地部署运行时产物，不要提交
+stack.env
+logs/
+redis/
+redis-rest/

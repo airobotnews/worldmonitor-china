@@ -22,3 +22,10 @@ src/generated/**/*.ts whitespace=-blank-at-eof
 
 # Preserve the byte-identical upstream Umami patch, including its indented blank lines.
 docker/umami/session-data-upsert.patch -whitespace
+
+# [china-fork] Pin Windows launchers to CRLF: cmd.exe parses .cmd files
+# unreliably with LF line endings (multi-line if/goto blocks), and the result
+# must not depend on the reader core.autocrlf setting.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
