@@ -73,7 +73,7 @@ jobs:
         run: npm run test:e2e:visual:full
       - name: Upload full visual-goldens Playwright artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-visual-goldens-full-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/
@@ -84,7 +84,7 @@ jobs:
         run: npm run test:e2e:visual:tech
       - name: Upload tech visual-goldens Playwright artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-visual-goldens-tech-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/
@@ -120,7 +120,7 @@ jobs:
         run: npm run test:e2e:chrome
       - name: Upload chrome Playwright artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-chrome-${{ github.run_id }}-${{ github.run_attempt }}
           path: test-results/
@@ -140,7 +140,7 @@ jobs:
         run: node scripts/playwright-screenshot-gallery.mjs test-results gallery
       - name: Upload screenshot gallery
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-gallery-${{ github.run_id }}-${{ github.run_attempt }}
           path: gallery/
