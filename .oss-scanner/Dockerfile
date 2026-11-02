@@ -18,7 +18,7 @@
 FROM rust:1-bookworm@sha256:e12566d5abc17a0da741628782cdb504b68b8961f5bfcf677936bf3e8b32de29 AS rust
 
 # node:24-bookworm
-FROM node:24-bookworm@sha256:7b559cf7f77d837192392499a850abb1a3d1f49fbc2bd0692d54b212c9e38f6d
+FROM node:24-bookworm@sha256:e7add2a490bb17d97b485b8641bd88455fff7839ade0f5eba493c3508124d413
 
 ENV DEBIAN_FRONTEND=noninteractive \
     NODE_OPTIONS=--max-old-space-size=8192 \
